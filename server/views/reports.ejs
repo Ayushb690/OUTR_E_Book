@@ -1,0 +1,95 @@
+<%- include('partials/header') %>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2 class="fw-bold">Library Reports</h2>
+    </div>
+</div>
+
+<div id="alert-container"></div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-transparent border-0 pt-4 px-4">
+                <h4 class="fw-bold mb-0 text-primary">Overdue Books</h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Due Date</th>
+                                <th>Fine</th>
+                            </tr>
+                        </thead>
+                        <tbody id="overdue-body">
+                            <tr><td colspan="3" class="text-center py-3">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-transparent border-0 pt-4 px-4">
+                <h4 class="fw-bold mb-0 text-success">Stock Summary</h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Genre</th>
+                                <th>Total</th>
+                                <th>Available</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stock-body">
+                            <tr><td colspan="3" class="text-center py-3">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const overdue = await apiRequest('/api/reports/overdue');
+        const overdueBody = document.getElementById('overdue-body');
+        if (overdue && overdue.length > 0) {
+            overdueBody.innerHTML = overdue.map(o => `
+                <tr>
+                    <td>${o.studentInfo.name}</td>
+                    <td>${new Date(o.dueDate).toLocaleDateString()}</td>
+                    <td>$${o.currentFine}</td>
+                </tr>
+            `).join('');
+        } else {
+            overdueBody.innerHTML = '<tr><td colspan="3" class="text-center">No overdue books.</td></tr>';
+        }
+
+        const stock = await apiRequest('/api/reports/stock-summary');
+        const stockBody = document.getElementById('stock-body');
+        if (stock && stock.length > 0) {
+            stockBody.innerHTML = stock.map(s => `
+                <tr>
+                    <td>${s._id}</td>
+                    <td>${s.totalStock}</td>
+                    <td>${s.availableStock}</td>
+                </tr>
+            `).join('');
+        } else {
+            stockBody.innerHTML = '<tr><td colspan="3" class="text-center">No stock data.</td></tr>';
+        }
+    } catch (err) {
+        showAlert(err.message);
+    }
+});
+</script>
+<%- include('partials/footer') %>

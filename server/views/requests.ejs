@@ -1,0 +1,98 @@
+<%- include('partials/header') %>
+
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h2 class="fw-bold">Borrow Requests Management</h2>
+        <p class="text-muted">Review and approve or reject book borrow requests from students.</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <button class="btn btn-outline-primary rounded-pill" onclick="fetchRequests()">
+            <i class="fas fa-sync-alt me-1"></i> Refresh
+        </button>
+    </div>
+</div>
+
+<div id="alert-container"></div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th class="px-4 py-3">Student</th>
+                    <th class="py-3">Book Title</th>
+                    <th class="py-3">ISBN</th>
+                    <th class="py-3 text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="requests-body">
+                <tr>
+                    <td colspan="4" class="text-center py-5 text-muted">Loading pending requests...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    fetchRequests();
+});
+
+async function fetchRequests() {
+    const body = document.getElementById('requests-body');
+    try {
+        const requests = await apiRequest('/api/books/requests/pending');
+        
+        if (!requests || requests.length === 0) {
+            body.innerHTML = '<tr><td colspan="4" class="text-center py-5">No pending requests found.</td></tr>';
+            return;
+        }
+
+        body.innerHTML = requests.map(req => {
+            const userName = req.user ? req.user.name : 'Unknown User';
+            const userDetail = req.user ? (req.user.memberId || req.user.email) : 'N/A';
+            const bookTitle = req.book ? req.book.title : 'Unknown Book';
+            const bookIsbn = req.book ? req.book.isbn : 'N/A';
+
+            return `
+                <tr>
+                    <td class="px-4 py-3">
+                        <div class="fw-bold">${userName}</div>
+                        <small class="text-muted">${userDetail}</small>
+                    </td>
+                    <td class="py-3">${bookTitle}</td>
+                    <td class="py-3">${bookIsbn}</td>
+                    <td class="py-3 text-center">
+                        <button class="btn btn-success btn-sm rounded-pill px-3 me-1" onclick="processRequest('${req._id}', 'approve')">
+                            Approve
+                        </button>
+                        <button class="btn btn-danger btn-sm rounded-pill px-3" onclick="processRequest('${req._id}', 'reject')">
+                            Reject
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } catch (err) {
+        console.error('Fetch requests error:', err);
+        if (body) {
+            body.innerHTML = `<tr><td colspan="4" class="text-center py-5 text-danger">Failed to load requests: ${err.message}</td></tr>`;
+        }
+    }
+}
+
+async function processRequest(requestId, action) {
+    if (!confirm(`Are you sure you want to ${action} this request?`)) return;
+    
+    try {
+        await apiRequest(`/api/books/request/${requestId}`, 'PUT', { action });
+        showAlert(`Request ${action}d successfully`, 'success');
+        fetchRequests();
+    } catch (err) {
+        showAlert(err.message);
+    }
+}
+</script>
+
+<%- include('partials/footer') %>

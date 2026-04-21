@@ -1,0 +1,44 @@
+<%- include('partials/header') %>
+
+<div class="row align-items-center py-5">
+    <div class="col-md-7">
+        <h1 class="display-3 fw-bold mb-4">Smart OUTR E-Book <span class="text-primary">Simplified.</span></h1>
+        <p class="lead mb-4 text-secondary">
+            Empower your knowledge with our state-of-the-art OUTR E-Book system. Seamlessly manage books, track issues, and explore a vast collection of resources at your fingertips.
+        </p>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
+            <a href="/login" class="btn btn-primary btn-lg px-4 me-md-2 fw-bold guest-link">Get Started</a>
+            <a href="/register" class="btn btn-outline-secondary btn-lg px-4 guest-link">Sign Up</a>
+            <a href="/books" class="btn btn-primary btn-lg px-4 me-md-2 fw-bold auth-link d-none">View Books</a>
+        </div>
+    </div>
+    <div class="col-md-5 d-none d-md-block">
+        <img src="https://img.freepik.com/free-vector/library-concept-illustration_114360-2646.jpg" alt="Library Illustration" class="img-fluid rounded shadow">
+    </div>
+</div>
+
+<div class="row text-center py-5 bg-light rounded-4 my-5">
+    <div class="col-md-4">
+        <div class="feature-icon bg-primary bg-gradient text-white mb-3">
+            <i class="fas fa-search fs-2 p-3 rounded"></i>
+        </div>
+        <h3>Search & Find</h3>
+        <p>Easily search through our expansive catalog by title, author, or ISBN. Find exactly what you're looking for in seconds.</p>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-icon bg-primary bg-gradient text-white mb-3">
+            <i class="fas fa-exchange-alt fs-2 p-3 rounded"></i>
+        </div>
+        <h3>Issue & Return</h3>
+        <p>Students can self-service book issues and returns. Quick, efficient, and hassle-free library experience.</p>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-icon bg-primary bg-gradient text-white mb-3">
+            <i class="fas fa-chart-line fs-2 p-3 rounded"></i>
+        </div>
+        <h3>Real-time Reports</h3>
+        <p>Comprehensive reports for librarians to track book status, lost history, and inventory health.</p>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
